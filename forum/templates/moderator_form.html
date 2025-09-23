@@ -1,0 +1,173 @@
+{% load static vite %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Become a Moderator - CyberShield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+    {% vite_css 'src/main.tsx' as css_files %}
+    {% for css_file in css_files %}
+      <link rel="stylesheet" href="{{ css_file }}" />
+    {% endfor %}
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    {% vite_asset 'src/main.tsx' as app_script %}
+    {% with app_script=app_script %}
+      <main class="main-wrap flex-grow">
+        <div class="max-w-4xl mx-auto">
+          {% if app_script %}
+            <div id="moderator-root"></div>
+            <noscript>
+              <div class="glass-panel mt-6 p-6 text-sm text-red-200">
+                JavaScript is required to submit the moderator application. Please enable it and refresh the page.
+              </div>
+            </noscript>
+          {% else %}
+            <section class="glass-panel mt-6 space-y-8 p-6">
+              <div class="space-y-3">
+                <span class="badge">Moderator Application</span>
+                <h1 class="card-title">Help steward CyberShield</h1>
+                <p class="card-subtitle">
+                  Our enhanced moderator portal is temporarily unavailable, but you can still submit your application securely using the form below.
+                </p>
+              </div>
+
+              {{ form.media }}
+              <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                  <div class="form-error space-y-2">
+                    {% for error in form.non_field_errors %}
+                      <p>{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                <div class="grid gap-6 md:grid-cols-2">
+                  <div>
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}
+                      <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                  <div>
+                    <label for="{{ form.email.id_for_label }}">Email</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                      <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                  <div>
+                    <label for="{{ form.password.id_for_label }}">Password</label>
+                    {{ form.password }}
+                    <p class="form-hint">Use at least 8 characters with a mix of numbers and letters.</p>
+                    {% for error in form.password.errors %}
+                      <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                  <div>
+                    <label for="{{ form.password_confirm.id_for_label }}">Confirm password</label>
+                    {{ form.password_confirm }}
+                    {% for error in form.password_confirm.errors %}
+                      <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div>
+                  <label for="{{ form.certifications.id_for_label }}">Relevant certifications</label>
+                  {{ form.certifications }}
+                  {% if form.certifications.help_text %}
+                    <p class="form-hint">{{ form.certifications.help_text }}</p>
+                  {% endif %}
+                  {% for error in form.certifications.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div>
+                  <label for="{{ form.bio.id_for_label }}">Professional bio</label>
+                  {{ form.bio }}
+                  <p class="form-hint">Minimum 100 characters.</p>
+                  {% for error in form.bio.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div>
+                  <label for="{{ form.profile_pic.id_for_label }}">Profile photo (optional)</label>
+                  {{ form.profile_pic }}
+                  {% for error in form.profile_pic.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div class="rounded-2xl border border-slate-700/60 bg-slate-900/60 p-6">
+                  <div class="flex items-start gap-3">
+                    {{ form.agree_terms }}
+                    <label for="{{ form.agree_terms.id_for_label }}" class="normal-case tracking-normal text-sm text-slate-200">
+                      I agree to the <a href="{% url 'terms_conditions' %}" class="text-blue-200 underline-offset-2 hover:underline">Terms &amp; Conditions</a> and will uphold the moderator guidelines.
+                    </label>
+                  </div>
+                  {% for error in form.agree_terms.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div>
+                  {{ form.captcha }}
+                  {% for error in form.captcha.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                  <p class="text-sm text-slate-300">Applications are reviewed within 72 hours.</p>
+                  <div class="flex flex-col gap-3 md:flex-row">
+                    <button type="submit" class="btn btn-primary">Submit application</button>
+                    <a href="{% url 'forum_list' %}" class="btn btn-secondary text-center">Back to forum</a>
+                  </div>
+                </div>
+              </form>
+            </section>
+          {% endif %}
+        </div>
+      </main>
+
+      <div class="hidden">
+        <form>{% csrf_token %}</form>
+      </div>
+
+      <script>
+        window.__CS_ROUTES__ = {
+          moderatorSubmit: "{% url 'moderator_form' %}",
+          csrfToken: "{{ csrf_token|escapejs }}"
+        };
+      </script>
+
+      {% if app_script %}
+        <script type="module" src="{{ app_script }}" defer></script>
+      {% else %}
+        <script>
+          console.warn('Vite build missing. Rendering server-side fallback form.');
+        </script>
+      {% endif %}
+    {% endwith %}
+    {% include 'components/site_footer.html' %}
+
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+  </body>
+</html>

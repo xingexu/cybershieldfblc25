@@ -1,0 +1,31 @@
+venv/
+__pycache__/
+*.pyc
+*.sqlite3
+.DS_Store# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+.env*/
+
+# Django
+db.sqlite3
+*.sqlite3
+media/
+media/*
+!media/profile_pics/default-*.jpg
+
+# Node
+frontend/node_modules/
+frontend/.vite/
+
+# Vite build output (served by Django static)
+static/frontend/
+!static/frontend/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

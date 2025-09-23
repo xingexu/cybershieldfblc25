@@ -1,0 +1,373 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ discussion.title }} - CyberShield</title>
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'media/CyberShield.png' %}" type="image/png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    <main class="main-wrap flex-grow">
+      <div class="mb-4">
+        <a href="{% url 'forum_list' %}" class="text-soft hover:text-white inline-flex items-center gap-2 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to all discussions
+        </a>
+      </div>
+
+      <!-- Discussion Post -->
+      <div class="discussion-card mb-10">
+        <div class="discussion-card__body">
+          <div class="flex justify-between items-start">
+            <h1 class="text-2xl font-bold flex-grow">{{ discussion.title }}</h1>
+            <div class="flex items-center space-x-2">
+              {% if discussion.forum_tag %}
+                <span class="badge">{{ discussion.forum_tag.name }}</span>
+              {% endif %}
+              {% if user.is_authenticated and user == discussion.author or user.role == 'moderator' or user.is_staff %}
+              <a href="{% url 'delete_discussion' discussion.id %}" 
+                 onclick="return confirm('Are you sure you want to delete this discussion?')" 
+                 class="text-red-400 hover:text-red-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          <div class="flex justify-between items-center mt-4 text-sm text-slate-400">
+            <div class="flex items-center">
+              <span>Posted by 
+                {% if discussion.author.role == 'moderator' %}
+                  <a href="{% url 'user_profile' discussion.author.username %}" class="moderator-name">
+                    {{ discussion.author.username }}
+                    <span class="moderator-badge">Mod</span>
+                  </a>
+                {% else %}
+                  <a href="{% url 'user_profile' discussion.author.username %}" class="text-blue-400 hover:text-blue-300">
+                    {{ discussion.author.username }}
+                  </a>
+                {% endif %}
+              </span>
+              <span class="mx-2">•</span>
+              <span>{{ discussion.created_at|date:"M d, Y" }}</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <div class="flex items-center space-x-1">
+                {% if user.is_authenticated %}
+                <button class="vote-button upvote {% if user in discussion.likes.all %}active{% endif %}" 
+                        data-post-id="{{ discussion.id }}" 
+                        data-vote-type="upvote">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                  </svg>
+                  <span class="likes-count ml-1">{{ discussion.likes.count }}</span>
+                </button>
+                <button class="vote-button downvote {% if user in discussion.dislikes.all %}active{% endif %}"
+                        data-post-id="{{ discussion.id }}"
+                        data-vote-type="downvote">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                  <span class="dislikes-count ml-1">{{ discussion.dislikes.count }}</span>
+                </button>
+                {% else %}
+                <div class="text-sm text-slate-500">
+                  <a href="{% url 'login' %}" class="text-blue-400 hover:text-blue-300">Log in</a> to vote
+                </div>
+                {% endif %}
+              </div>
+              <span class="mx-2">•</span>
+              <span id="comment-count">{{ discussion.forumreply_set.count }} comments</span>
+            </div>
+          </div>
+
+          <div class="content mt-6 text-soft leading-relaxed prose prose-invert max-w-none">
+            {{ discussion.content|safe|linebreaks }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+      <h2 class="text-xl font-semibold mb-4">Comments</h2>
+
+      <!-- Add Comment Form -->
+      {% if user.is_authenticated %}
+      <div class="mb-8">
+        <form class="surface-soft reply-form" data-post-id="{{ discussion.id }}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="content" class="block text-sm font-medium mb-1">Add a comment</label>
+            <textarea id="content" name="content" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn-primary text-sm">Submit Comment</button>
+        </form>
+      </div>
+      {% else %}
+      <div class="mb-8 surface-soft text-center text-soft">
+        <a href="{% url 'login' %}" class="nav-pill nav-pill--primary">Log in</a>
+        <span class="block text-xs text-muted mt-3">Sign in to weigh in with your expertise.</span>
+      </div>
+      {% endif %}
+
+      <!-- Comments List -->
+      <div class="space-y-4">
+        {% if discussion.forumreply_set.all %}
+          {% for reply in discussion.forumreply_set.all %}
+            <div class="comment-card">
+              <div class="flex justify-between items-start">
+                <div class="flex items-center">
+                  {% if reply.author.role == 'moderator' %}
+                    <a href="{% url 'user_profile' reply.author.username %}" class="moderator-name">
+                      {{ reply.author.username }}
+                      <span class="moderator-badge">Mod</span>
+                    </a>
+                  {% else %}
+                    <a href="{% url 'user_profile' reply.author.username %}" class="text-blue-400 hover:text-blue-300">
+                      {{ reply.author.username }}
+                    </a>
+                  {% endif %}
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-sm text-slate-400">{{ reply.created_at|date:"M d, Y" }}</span>
+                  {% if user.is_authenticated and user == reply.author or user.role == 'moderator' or user.is_staff %}
+                  <a href="{% url 'delete_comment' reply.id %}" 
+                     onclick="return confirm('Are you sure you want to delete this comment?')" 
+                     class="text-red-400 hover:text-red-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="mt-3 text-soft">
+                {{ reply.content|safe }}
+              </div>
+              
+              <div class="mt-2 flex items-center text-xs text-slate-400">
+                {% if user.is_authenticated %}
+                <div class="flex items-center space-x-2">
+                  <button class="vote-button upvote {% if user in reply.likes.all %}active{% endif %}"
+                          data-reply-id="{{ reply.id }}"
+                          data-vote-type="upvote">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                    </svg>
+                    <span class="likes-count ml-1">{{ reply.likes.count }}</span>
+                  </button>
+                  <button class="vote-button downvote {% if user in reply.dislikes.all %}active{% endif %}"
+                          data-reply-id="{{ reply.id }}"
+                          data-vote-type="downvote">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                    <span class="dislikes-count ml-1">{{ reply.dislikes.count }}</span>
+                  </button>
+                </div>
+                {% endif %}
+                
+                {% if user.is_authenticated %}
+                <!-- Show voting buttons and reply form -->
+                {% else %}
+                <!-- Show login prompt -->
+                <div class="mt-4 surface-muted text-center">
+                  <a href="{% url 'login' %}?next={{ request.path }}" class="nav-pill nav-pill--primary">Log in</a>
+                  <p class="text-xs text-muted mt-3">Sign in to vote or respond.</p>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="no-comments surface-soft text-center py-8">
+            <p class="text-soft">No comments yet. Be the first to comment!</p>
+          </div>
+        {% endif %}
+      </div>
+    </main>
+
+    <!-- Footer -->
+    {% include 'components/site_footer.html' %}
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+
+    <!-- JavaScript for handling reply form submission -->
+    <script>
+      $(document).ready(function() {
+          // Handle reply form submission
+          $(".reply-form").submit(function(e) {
+              e.preventDefault();
+              const form = $(this);
+              const postId = form.data("post-id");
+              const content = form.find("textarea[name='content']").val().trim();
+              const replyContainer = $(".space-y-4");
+
+              if (!content) return;
+
+              // Send AJAX request to save the reply
+              $.ajax({
+                  url: '{% url "add_reply" %}',
+                  type: 'POST',
+                  data: {
+                      'post_id': postId,
+                      'content': content,
+                      'csrfmiddlewaretoken': form.find('input[name=csrfmiddlewaretoken]').val()
+                  },
+                  success: function(response) {
+                      if (response.status === 'success') {
+                          // Add the new reply to the DOM
+                          const newReply = `
+                              <div class="comment-card">
+                                  <div class="flex justify-between items-start">
+                                      <div class="flex items-center">
+                                          <a href="/user/${response.author}" class="text-blue-400 hover:text-blue-300">
+                                              ${response.author}
+                                          </a>
+                                      </div>
+                                      <div class="flex items-center space-x-2">
+                                          <span class="text-sm text-slate-400">Just now</span>
+                                          <a href="/comment/${response.reply_id}/delete/" 
+                                             onclick="return confirm('Are you sure you want to delete this comment?')" 
+                                             class="text-red-400 hover:text-red-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                          </a>
+                                      </div>
+                                  </div>
+                                  
+                                  <div class="mt-3 text-soft">
+                                      ${content}
+                                  </div>
+                                  
+                                  <div class="mt-2 flex items-center text-xs text-slate-400">
+                                      <div class="flex items-center space-x-2">
+                                          <button class="vote-button upvote"
+                                                  data-reply-id="${response.reply_id}"
+                                                  data-vote-type="upvote">
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                              </svg>
+                                              <span class="likes-count ml-1">0</span>
+                                          </button>
+                                          <button class="vote-button downvote"
+                                                  data-reply-id="${response.reply_id}"
+                                                  data-vote-type="downvote">
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                              </svg>
+                                              <span class="dislikes-count ml-1">0</span>
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+                          `;
+
+                          // Find the "no comments" message if it exists
+                          const noCommentsMessage = $(".space-y-4").find('.no-comments');
+                          if (noCommentsMessage.length) {
+                              // Replace it with the new reply
+                              noCommentsMessage.replaceWith(newReply);
+                          } else {
+                              // Add the new reply to the top
+                              $(".space-y-4").prepend(newReply);
+                          }
+
+                          // Clear the textarea
+                          form.find("textarea[name='content']").val("");
+
+                          // Update comments count
+                          const countElement = $('#comment-count');
+                          const currentText = countElement.text();
+                          const currentCount = parseInt(currentText, 10) || 0;
+                          countElement.text(`${currentCount + 1} comments`);
+                      } else {
+                          console.error('Server error:', response.message);
+                          alert(response.message || 'An error occurred while submitting your reply.');
+                      }
+                  },
+                  error: function(xhr, status, error) {
+                      console.error('Error details:', xhr.responseText);
+                      alert('An error occurred while submitting your reply. Please try again.');
+                  }
+              });
+          });
+
+          // Use event delegation for vote buttons to handle dynamically added content
+          $(document).on('click', '.vote-button', function() {
+              if (!$(this).prop('disabled')) {
+                  const postId = $(this).data('post-id');
+                  const replyId = $(this).data('reply-id');
+                  const voteType = $(this).data('vote-type');
+                  const button = $(this);
+                  const container = button.closest('.discussion-card, .comment-card');
+                  const otherButton = voteType === 'upvote' ? 
+                      button.next('.vote-button') : 
+                      button.prev('.vote-button');
+                  
+                  // Determine if this is a post or reply vote
+                  const endpoint = replyId ? '{% url "vote_reply" %}' : '{% url "vote_post" %}';
+                  const data = replyId ? 
+                      { reply_id: replyId, vote_type: voteType } : 
+                      { post_id: postId, vote_type: voteType };
+                      
+                  // Add CSRF token
+                  data.csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+                  
+                  // Disable buttons during request
+                  container.find('.vote-button').prop('disabled', true);
+                  
+                  $.ajax({
+                      url: endpoint,
+                      type: 'POST',
+                      data: data,
+                      success: function(response) {
+                          if (response.status === 'success') {
+                              // Update vote counts
+                              container.find('.likes-count').text(response.likes_count);
+                              container.find('.dislikes-count').text(response.dislikes_count);
+                              
+                              // Remove active class from both buttons
+                              button.removeClass('active');
+                              otherButton.removeClass('active');
+                              
+                              // Add active class if vote was added
+                              if (response.action === 'added') {
+                                  button.addClass('active');
+                              }
+                          }
+                      },
+                      error: function(xhr, status, error) {
+                          console.error('Vote error:', error);
+                      },
+                      complete: function() {
+                          // Re-enable buttons
+                          container.find('.vote-button').prop('disabled', false);
+                      }
+                  });
+              }
+          });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - CyberShield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    <main class="main-wrap flex-grow flex items-center justify-center">
+      <div class="glass-panel auth-card w-full">
+        <div class="glass-panel__header text-center space-y-4">
+          <div class="flex justify-center">
+            <span class="profile-avatar" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 20.25h-3A2.25 2.25 0 013.25 18V5.25A2.25 2.25 0 015.5 3h13.125a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H12" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.5 17l2.72-2.72a1.25 1.25 0 011.768-.002L14.75 16.5l3.25-3.25" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5h.008v.008H8.25V7.5z" />
+              </svg>
+            </span>
+          </div>
+          <div>
+            <p class="section-title tracking-[0.4em] text-xs">Welcome Back</p>
+            <h1 class="card-title text-2xl md:text-3xl">Sign in to CyberShield</h1>
+            <p class="section-subtitle">Pick up where you left off with the community.</p>
+          </div>
+        </div>
+
+        <div class="glass-panel__body space-y-6">
+          {% if error %}
+            <div class="alert alert--danger">{{ error }}</div>
+          {% endif %}
+
+          {% if form.non_field_errors %}
+            <div class="alert alert--danger">
+              {% for err in form.non_field_errors %}
+                <p>{{ err }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="space-y-2">
+              <label for="id_username">Username</label>
+              {{ form.username }}
+              {% for error in form.username.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="space-y-2">
+              <label for="id_password">Password</label>
+              {{ form.password }}
+              {% for error in form.password.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="space-y-2">
+              <label for="id_captcha">Verification</label>
+              <div class="captcha-wrapper">
+                {{ form.captcha }}
+              </div>
+              {% for error in form.captcha.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="pt-2">
+              <button type="submit" class="btn-primary w-full">Sign In</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-panel__body surface-soft text-center mt-4">
+          <p class="text-soft">
+            Need an account?
+            <a href="{% url 'signup' %}" class="nav-pill nav-pill--primary ml-2">Create one</a>
+          </p>
+        </div>
+      </div>
+    </main>
+
+    {% include 'components/site_footer.html' %}
+
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+  </body>
+</html>

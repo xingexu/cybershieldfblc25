@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Profile | CyberShield</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    <main class="main-wrap flex-grow">
+      <div class="max-w-2xl mx-auto">
+        <div class="glass-panel rounded-3xl overflow-hidden mb-10">
+          <div class="glass-panel__header">
+            <h1 class="text-3xl font-semibold text-white tracking-wide">Edit Profile</h1>
+            <p class="text-slate-200/70 mt-2 text-sm max-w-md">
+              Refresh your bio and profile photo so the community knows who’s sharing insights.
+            </p>
+          </div>
+          
+          <div class="glass-panel__body space-y-6">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="p-4 rounded-2xl border {% if message.tags == 'success' %}border-emerald-400/40 bg-emerald-500/10{% elif message.tags == 'error' %}border-rose-400/40 bg-rose-500/10{% else %}border-blue-400/40 bg-blue-500/10{% endif %}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+            
+            <form method="post" enctype="multipart/form-data" class="space-y-8">
+              {% csrf_token %}
+              
+              <!-- Profile Picture -->
+              <div>
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <p class="text-sm font-semibold uppercase tracking-[0.35em] text-blue-200/80">Profile Picture</p>
+                    <p class="text-slate-200/70 text-sm mt-1">Upload a clear avatar to personalize your presence.</p>
+                  </div>
+                </div>
+                <div class="profile-picture-preview mb-5">
+                  {% if user.profile_picture %}
+                    <img id="profile-preview" src="{{ user.profile_picture.url }}" alt="{{ user.username }}">
+                  {% else %}
+                    <div id="profile-placeholder" class="w-full h-full flex items-center justify-center">
+                      {{ user.username.0|upper }}
+                    </div>
+                    <img id="profile-preview" src="" alt="{{ user.username }}" class="hidden">
+                  {% endif %}
+                </div>
+                <div class="flex justify-center">
+                  <label for="id_profile_picture" class="choose-image-btn cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-8m0 0l-3 3m3-3l3 3m6 4a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Upload Photo
+                    <span>PNG • JPG</span>
+                    <input id="id_profile_picture" name="profile_picture" type="file" class="hidden" accept="image/*">
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Bio -->
+              <div>
+                <div class="flex items-center justify-between">
+                  <label for="id_bio" class="text-sm font-semibold uppercase tracking-[0.35em] text-blue-200/80">Bio</label>
+                  <span class="text-xs text-slate-200/60">Share your background & focus areas.</span>
+                </div>
+                <textarea
+                  id="id_bio"
+                  name="bio"
+                  rows="5"
+                  class="w-full input-surface text-white border rounded-2xl p-4 focus:outline-none"
+                  placeholder="Tell us about yourself..."
+                >{{ user.bio }}</textarea>
+              </div>
+              
+              <!-- Submit Button -->
+              <div class="flex flex-col sm:flex-row sm:justify-between gap-3">
+                <button type="submit" class="btn-primary">
+                  Save Changes
+                </button>
+                <a href="{% url 'change_password' %}" class="btn-secondary">
+                  Change Password
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    {% include 'components/site_footer.html' %}
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+    <script>
+      $(document).ready(function() {
+        // Image preview functionality
+        $('#id_profile_picture').change(function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              $('#profile-placeholder').addClass('hidden');
+              $('#profile-preview').attr('src', e.target.result).removeClass('hidden');
+            }
+            reader.readAsDataURL(file);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

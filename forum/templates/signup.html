@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - CyberShield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    <main class="main-wrap flex-grow flex items-center justify-center">
+      <div class="glass-panel w-full max-w-3xl">
+        <div class="glass-panel__header text-center space-y-3">
+          <div class="flex justify-center">
+            <span class="profile-avatar" aria-hidden="true">CS</span>
+          </div>
+          <div>
+            <p class="section-title tracking-[0.4em] text-xs">Join CyberShield</p>
+            <h1 class="card-title text-2xl md:text-3xl">Create your account</h1>
+            <p class="section-subtitle">Collaborate with analysts, share insights, and track your security wins.</p>
+          </div>
+        </div>
+
+        <div class="glass-panel__body space-y-8">
+          {% if form.non_field_errors %}
+            <div class="alert alert--danger">
+              {% for err in form.non_field_errors %}
+                <p>{{ err }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          <form method="post" enctype="multipart/form-data" class="space-y-10">
+            {% csrf_token %}
+
+            <section class="space-y-6">
+              <div>
+                <p class="section-title text-xs tracking-[0.3em]">Account Details</p>
+                <p class="section-subtitle">Let’s start with the basics so we can set up your access.</p>
+              </div>
+              <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-2">
+                  <label for="id_username">Username</label>
+                  {{ form.username }}
+                  {% for error in form.username.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+                <div class="space-y-2">
+                  <label for="id_email">Email</label>
+                  {{ form.email }}
+                  {% for error in form.email.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+                <div class="space-y-2">
+                  <label for="id_password1">Password</label>
+                  {{ form.password1 }}
+                  {% for error in form.password1.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+                <div class="space-y-2">
+                  <label for="id_password2">Confirm Password</label>
+                  {{ form.password2 }}
+                  {% for error in form.password2.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+              <p class="form-hint">
+                Password should be at least 8 characters and mix letters, numbers, or symbols.
+              </p>
+            </section>
+
+            <section class="space-y-6">
+              <div>
+                <p class="section-title text-xs tracking-[0.3em]">Profile Touches</p>
+                <p class="section-subtitle">Add a photo and short bio so other members recognize you.</p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                  <div id="profile-preview" class="profile-avatar w-24 h-24 text-3xl">+</div>
+                  <div class="flex-1 file-drop">
+                    <div>
+                      <p class="text-soft font-semibold">Upload profile image</p>
+                      <p id="file-label" class="file-drop__hint">PNG or JPG up to 5MB</p>
+                    </div>
+                    <label for="id_profile_pic" class="file-drop__label">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-8m0 0l-3 3m3-3l3 3m6 4a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Browse
+                      {{ form.profile_pic }}
+                    </label>
+                  </div>
+                </div>
+                {% for error in form.profile_pic.errors %}
+                  <p class="field-error">{{ error }}</p>
+                {% endfor %}
+              </div>
+              <div class="space-y-2">
+                <label for="id_bio">Bio (optional)</label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                  {% for error in form.bio.errors %}
+                    <p class="field-error">{{ error }}</p>
+                  {% endfor %}
+                {% else %}
+                  <p class="form-hint">Share a quick snapshot of your cybersecurity interests.</p>
+                {% endif %}
+              </div>
+            </section>
+
+            <section class="space-y-4">
+              <div>
+                <p class="section-title text-xs tracking-[0.3em]">Verification</p>
+                <p class="section-subtitle">We keep the bots out so your contributions stay high-signal.</p>
+              </div>
+              <div class="captcha-wrapper">
+                {{ form.captcha }}
+              </div>
+              {% for error in form.captcha.errors %}
+                <p class="field-error">{{ error }}</p>
+              {% endfor %}
+            </section>
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <button type="submit" class="btn-primary w-full sm:w-auto">Create Account</button>
+              <p class="text-sm text-soft">
+                Already part of CyberShield?
+                <a href="{% url 'login' %}" class="nav-pill nav-pill--ghost ml-1">Log in</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    {% include 'components/site_footer.html' %}
+
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('id_profile_pic');
+        const preview = document.getElementById('profile-preview');
+        const label = document.getElementById('file-label');
+
+        if (!input || !preview) {
+          return;
+        }
+
+        input.addEventListener('change', function () {
+          const file = this.files && this.files[0];
+          if (!file) {
+            preview.textContent = '+';
+            label.textContent = 'PNG or JPG up to 5MB';
+            return;
+          }
+
+          label.textContent = file.name;
+
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            preview.innerHTML = '<img src="' + event.target.result + '" alt="Profile preview" />';
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    </script>
+  </body>
+</html>

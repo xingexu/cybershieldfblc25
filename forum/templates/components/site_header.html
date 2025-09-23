@@ -1,0 +1,19 @@
+<header class="site-header py-4 px-6 shadow-lg">
+  <div class="container mx-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <a href="/" class="brand text-2xl md:text-3xl">CYBERSHIELD</a>
+    <div class="flex items-center justify-between md:justify-end gap-3">
+      {% if user.is_authenticated %}
+        <div class="flex items-center gap-2 md:gap-3">
+          <a href="{% url 'user_profile' user.username %}" class="nav-pill">Profile</a>
+          <a href="{% url 'create_forum' %}" class="nav-pill">Post</a>
+          <a href="{% url 'logout' %}" class="nav-pill">Logout</a>
+        </div>
+      {% else %}
+        <div class="flex items-center gap-2 md:gap-3">
+          <a href="{% url 'login' %}" class="nav-pill">Login</a>
+          <a href="{% url 'signup' %}" class="nav-pill nav-pill--primary">Sign Up</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</header>

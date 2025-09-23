@@ -1,0 +1,822 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberShield - Security Forum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.0"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    <main class="main-wrap flex-grow">
+      <div class="max-w-7xl mx-auto">
+      <!-- Mobile toggle button -->
+      <div class="md:hidden">
+        <button class="toggle-sidebar">
+          <div class="hamburger-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Mobile overlay -->
+      <div class="sidebar-overlay md:hidden"></div>
+
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- Sidebar with filters -->
+        <aside class="sidebar w-full md:w-64 lg:w-80">
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl p-6 mb-6 border border-slate-700/50">
+            <h2 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              Search
+            </h2>
+            <div class="relative">
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search forums..."
+                class="w-full bg-slate-700/50 text-gray-100 border border-slate-600/50 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 placeholder-gray-400"
+              />
+              <div
+                id="search-results"
+                class="absolute left-0 right-0 mt-1 bg-slate-700 rounded-md shadow-lg max-h-60 overflow-y-auto hidden z-10"
+              ></div>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl p-6 mb-6 border border-slate-700/50">
+            <h2 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+              </svg>
+              Sort by
+            </h2>
+            <div class="space-y-2">
+              <button class="sort-button w-full py-3 px-4 bg-slate-700/50 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-cyan-600/20 rounded-lg text-left transition-all duration-300 hover:border-blue-500/50 border border-slate-600/50" data-sort="recent">Recently Posted</button>
+              <button class="sort-button w-full py-3 px-4 bg-slate-700/50 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-cyan-600/20 rounded-lg text-left transition-all duration-300 hover:border-blue-500/50 border border-slate-600/50" data-sort="upvotes">Most Upvotes</button>
+              <button class="sort-button w-full py-3 px-4 bg-slate-700/50 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-cyan-600/20 rounded-lg text-left transition-all duration-300 hover:border-blue-500/50 border border-slate-600/50" data-sort="downvotes">Most Downvotes</button>
+              <button class="sort-button w-full py-3 px-4 bg-slate-700/50 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-cyan-600/20 rounded-lg text-left transition-all duration-300 hover:border-blue-500/50 border border-slate-600/50" data-sort="oldest">Oldest</button>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl p-6 border border-slate-700/50">
+            <h2 class="text-xl font-semibold mb-4 text-white flex items-center">
+              <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+              Filter by Topic
+            </h2>
+            <div class="space-y-2">
+              <button
+                class="filter-tag active-tag w-full py-3 px-4 rounded-lg text-left transition-all duration-300 bg-gradient-to-r from-blue-600 to-cyan-600 text-white border border-blue-500/50 shadow-lg"
+                data-tag="all"
+              >
+                All Topics
+              </button>
+              {% for tag in forum_tags %}
+              <button
+                class="filter-tag w-full py-3 px-4 bg-slate-700/50 hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-cyan-600/20 rounded-lg text-left transition-all duration-300 hover:border-blue-500/50 border border-slate-600/50"
+                data-tag="{{ tag.id }}"
+              >
+                {{ tag.name }}
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="main-content flex-grow">
+          <div id="forum-posts">
+            {% if forum_posts %} {% for post in forum_posts %}
+            <div
+              class="post-card rounded-xl shadow-xl mb-6 overflow-hidden"
+              data-tag="{{ post.forum_tag.id }}"
+            >
+              <!-- Post header - always visible -->
+              <div class="p-6">
+                <div class="flex justify-between items-start">
+                  <h2 class="text-xl font-semibold flex-grow text-white hover:text-blue-300 transition-colors duration-300">{{ post.title }}</h2>
+                  <div class="flex items-center space-x-2">
+                    <span class="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 text-blue-300 text-xs px-3 py-1 rounded-full border border-blue-500/30">{{ post.forum_tag.name }}</span>
+                    {% if user.is_authenticated and user == post.author or user.role == 'moderator' or user.is_staff %}
+                    <a href="{% url 'delete_discussion' post.id %}" 
+                       onclick="return confirm('Are you sure you want to delete this post?')" 
+                       class="text-red-400 hover:text-red-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+                <div
+                  class="flex justify-between items-center mt-4 text-sm text-slate-400"
+                >
+                  <div class="flex items-center">
+                    <span>Posted by 
+                      {% if post.author.role == 'moderator' %}
+                        <a href="{% url 'user_profile' post.author.username %}" class="moderator-name">
+                          {{ post.author.username }}
+                          <span class="moderator-badge">Mod</span>
+                        </a>
+                      {% else %}
+                        <a href="{% url 'user_profile' post.author.username %}" class="text-blue-400 hover:text-blue-300">
+                          {{ post.author.username }}
+                        </a>
+                      {% endif %}
+                    </span>
+                    <span class="mx-2">•</span>
+                    <span>{{ post.created_at|date:"M d, Y" }}</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-1">
+                      {% if user.is_authenticated %}
+                      <button class="vote-button upvote {% if user in post.likes.all %}active{% endif %}" 
+                              data-post-id="{{ post.id }}" 
+                              data-vote-type="upvote">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                        <span class="likes-count ml-1">{{ post.likes.count }}</span>
+                      </button>
+                      <button class="vote-button downvote {% if user in post.dislikes.all %}active{% endif %}"
+                              data-post-id="{{ post.id }}"
+                              data-vote-type="downvote">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                        <span class="dislikes-count ml-1">{{ post.dislikes.count }}</span>
+                      </button>
+                      {% else %}
+                      <div class="text-sm text-slate-500">
+                        <a href="{% url 'login' %}" class="text-blue-400 hover:text-blue-300">Log in</a> to vote
+                      </div>
+                      {% endif %}
+                    </div>
+                    <span class="mx-2">•</span>
+                    <span>{{ post.forumreply_set.count }} comments</span>
+                  </div>
+                </div>
+                <!-- Change from striptags to safe to preserve formatting -->
+                <div class="text-slate-300 line-clamp-2 mb-3 prose prose-invert prose-sm max-w-none">
+                  {{ post.content|safe|truncatewords_html:30 }}
+                </div>
+                <button
+                  class="toggle-post mt-3 text-blue-400 hover:text-blue-300 text-sm flex items-center"
+                  data-post-id="{{ post.id }}"
+                >
+                  <span class="show-text">See more</span>
+                  <span class="hide-text hidden">Hide</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="show-icon h-4 w-4 ml-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="hide-icon h-4 w-4 ml-1 hidden"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 15l7-7 7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Expandable content -->
+              <div
+                id="content-{{ post.id }}"
+                class="post-content border-t border-slate-700"
+              >
+                <div class="p-4">
+                  <!-- Update the prose class to match discussion_detail -->
+                  <div class="prose prose-invert max-w-none">
+                    {{ post.content|safe }}
+                  </div>
+
+                  <!-- Replies section -->
+                  <div class="mt-6 pt-4 border-t border-slate-700">
+                    <h3 class="text-lg font-medium mb-3">Comments</h3>
+                    <div class="space-y-4 replies-container">
+                      {% for reply in post.forumreply_set.all %}
+                      <div class="bg-slate-700 rounded p-3">
+                        <div class="flex justify-between items-start">
+                          <p class="text-sm font-medium">
+                            {% if reply.author.role == 'moderator' %}
+                              <a href="{% url 'user_profile' reply.author.username %}" class="moderator-name">
+                                {{ reply.author.username }}
+                                <span class="moderator-badge">Mod</span>
+                              </a>
+                            {% else %}
+                              <a href="{% url 'user_profile' reply.author.username %}" class="text-blue-400 hover:text-blue-300">
+                                {{ reply.author.username }}
+                              </a>
+                            {% endif %}
+                          </p>
+                          <div class="flex items-center space-x-2">
+                            <span class="text-xs text-slate-400">{{ reply.created_at|date:"M d, Y" }}</span>
+                            {% if user.is_authenticated and user == reply.author or user.role == 'moderator' or user.is_staff %}
+                            <a href="{% url 'delete_comment' reply.id %}" 
+                               onclick="return confirm('Are you sure you want to delete this comment?')" 
+                               class="text-red-400 hover:text-red-300">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </a>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <p class="mt-1 text-slate-300">{{ reply.content }}</p>
+                        <div
+                          class="flex items-center mt-2 text-xs text-slate-400"
+                        >
+                          {% if user.is_authenticated %}
+                          <div class="flex items-center space-x-2">
+                            <button class="vote-button upvote {% if user in reply.likes.all %}active{% endif %}"
+                                    data-reply-id="{{ reply.id }}"
+                                    data-vote-type="upvote">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                              </svg>
+                              <span class="likes-count ml-1">{{ reply.likes.count }}</span>
+                            </button>
+                            <button class="vote-button downvote {% if user in reply.dislikes.all %}active{% endif %}"
+                                    data-reply-id="{{ reply.id }}"
+                                    data-vote-type="downvote">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                              </svg>
+                              <span class="dislikes-count ml-1">{{ reply.dislikes.count }}</span>
+                            </button>
+                          </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      {% empty %}
+                      <p class="text-sm text-slate-400">
+                        No comments yet. Be the first to comment!
+                      </p>
+                      {% endfor %}
+                    </div>
+
+                    {% if user.is_authenticated %}
+                    <form class="mt-4 reply-form" data-post-id="{{ post.id }}">
+                      {% csrf_token %}
+                      <textarea
+                        name="content"
+                        class="w-full bg-slate-700 text-white border border-slate-600 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        rows="3"
+                        placeholder="Add a comment..."
+                      ></textarea>
+                      <button
+                        type="submit"
+                        class="mt-2 bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 rounded text-sm transition-colors"
+                      >
+                        Submit
+                      </button>
+                    </form>
+                    {% else %}
+                    <p class="mt-4 text-sm text-slate-400">
+                      <a
+                        href="{% url 'login' %}"
+                        class="text-blue-400 hover:underline"
+                        >Log in</a
+                      >
+                      to add a comment.
+                    </p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %} {% else %}
+            <div class="bg-slate-800 rounded-lg shadow-lg p-6 text-center">
+              <p class="text-lg">
+                No posts available. Be the first to start a discussion!
+              </p>
+              {% if user.is_authenticated %}
+              <a
+                href="{% url 'create_forum' %}"
+                class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
+                >Create Post</a
+              >
+              {% else %}
+              <a
+                href="{% url 'signup' %}"
+                class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
+                >Sign Up to Post</a
+              >
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+
+    {% include 'components/site_footer.html' %}
+  </body>
+
+    <!-- Scripts -->
+    <script>
+      $(document).ready(function() {
+          // Toggle post content
+          $(".toggle-post").click(function() {
+              const postId = $(this).data("post-id");
+              const contentDiv = $(`#content-${postId}`);
+
+              // Toggle expanded class
+              contentDiv.toggleClass("expanded");
+
+              // Toggle icons and text
+              $(this).find(".show-text, .hide-text, .show-icon, .hide-icon").toggleClass("hidden");
+          });
+
+          // Filter by tags
+          $('.filter-tag').on('click', function() {
+              $('.filter-tag').removeClass('active-tag').addClass('bg-slate-700');
+              $(this).addClass('active-tag').removeClass('bg-slate-700');
+
+              const selectedTag = $(this).data('tag');
+
+              if (selectedTag === 'all') {
+                  $('.post-card').show();
+              } else {
+                  $('.post-card').hide();
+                  $(`.post-card[data-tag="${selectedTag}"]`).show();
+              }
+          });
+
+          // Handle reply form submission
+          $(".reply-form").submit(function(e) {
+              e.preventDefault();
+              const form = $(this);
+              const postId = form.data("post-id");
+              const content = form.find("textarea[name='content']").val().trim();
+              const replyContainer = form.closest(".post-content").find(".replies-container");
+
+              if (!content) return;
+
+              // Send AJAX request to save the reply
+              $.ajax({
+                  url: '{% url "add_reply" %}',
+                  type: 'POST',
+                  data: {
+                      'post_id': postId,
+                      'content': content,
+                      'csrfmiddlewaretoken': form.find('input[name=csrfmiddlewaretoken]').val()
+                  },
+                  success: function(response) {
+                      // Add the new reply to the DOM
+                      const newReply = `
+                          <div class="bg-slate-700 rounded p-3">
+                              <div class="flex justify-between items-start">
+                                  <p class="text-sm font-medium">
+                                    <a href="/user/${response.author}" class="text-blue-400 hover:text-blue-300">
+                                      ${response.author}
+                                    </a>
+                                  </p>
+                                  <div class="flex items-center space-x-2">
+                                      <span class="text-xs text-slate-400">Just now</span>
+                                      <a href="/comment/${response.reply_id}/delete/" 
+                                         onclick="return confirm('Are you sure you want to delete this comment?')" 
+                                         class="text-red-400 hover:text-red-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                      </a>
+                                  </div>
+                              </div>
+                              <div class="mt-1 text-slate-300">${content}</div>
+                              <div class="flex items-center mt-2 text-xs text-slate-400">
+                                  <div class="flex items-center space-x-2">
+                                      <button class="vote-button upvote"
+                                              data-reply-id="${response.reply_id}"
+                                              data-vote-type="upvote">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                          </svg>
+                                          <span class="likes-count ml-1">0</span>
+                                      </button>
+                                      <button class="vote-button downvote"
+                                              data-reply-id="${response.reply_id}"
+                                              data-vote-type="downvote">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                          </svg>
+                                          <span class="dislikes-count ml-1">0</span>
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
+                      `;
+
+                      // Find the "no comments" paragraph if it exists and remove it
+                      const noCommentsText = replyContainer.find("p.text-sm.text-slate-400");
+                      if (noCommentsText.length) {
+                          noCommentsText.remove();
+                      }
+
+                      // Add the new reply at the top
+                      replyContainer.prepend(newReply);
+
+                      // Clear the textarea
+                      form.find("textarea").val("");
+
+                      // Update comments count
+                      const postCard = form.closest(".post-card");
+                      const commentsCountElement = postCard.find("span:contains('comments')");
+                      const currentText = commentsCountElement.text();
+                      const currentCount = parseInt(currentText);
+                      commentsCountElement.text(`${currentCount + 1} comments`);
+                  },
+                  error: function(xhr, status, error) {
+                      console.error(error);
+                      alert('An error occurred while submitting your reply. Please try again.');
+                  }
+              });
+          });
+
+          // Initialize search
+          const searchData = [];
+          {% for post in forum_posts %}
+              searchData.push({
+                  id: {{ post.id }},
+                  title: "{{ post.title|escapejs }}",
+                  content: "{{ post.content|escapejs|truncatechars:100 }}",
+                  author: "{{ post.author.username|escapejs }}",
+                  forum_tag: "{{ post.forum_tag.name|escapejs }}"
+              });
+          {% endfor %}
+
+          const fuseOptions = {
+              keys: ['title', 'content', 'author', 'forum_tag'],
+              threshold: 0.3
+          };
+          const fuse = new Fuse(searchData, fuseOptions);
+
+          $('#search-input').on('input', function() {
+              const query = $(this).val();
+              if (query.length < 2) {
+                  $('#search-results').hide();
+                  return;
+              }
+
+              const results = fuse.search(query);
+
+              if (results.length > 0) {
+                  let resultsHtml = '';
+                  results.forEach(result => {
+                      resultsHtml += `
+                          <div class="p-3 hover:bg-slate-600 border-b border-slate-600 cursor-pointer" onclick="scrollToPost(${result.item.id})">
+                              <div class="font-medium">${result.item.title}</div>
+                              <div class="text-sm text-slate-400 mt-1">${result.item.content}</div>
+                          </div>
+                      `;
+                  });
+
+                  $('#search-results').html(resultsHtml).show();
+              } else {
+                  $('#search-results').html('<div class="p-3">No results found</div>').show();
+              }
+          });
+
+          $(document).on('click', function(e) {
+              if (!$(e.target).closest('#search-input, #search-results').length) {
+                  $('#search-results').hide();
+              }
+          });
+
+          // Add these new functions for mobile sidebar toggle
+          $('.toggle-sidebar').click(function() {
+              $(this).toggleClass('active');
+              $('.sidebar').toggleClass('expanded');
+              $('.sidebar-overlay').toggleClass('active');
+              
+              // Change icon based on state
+              const svg = $(this).find('svg');
+              if ($(this).hasClass('active')) {
+                  svg.html('<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />');
+              } else {
+                  svg.html('<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />');
+              }
+          });
+
+          // Close sidebar when clicking overlay
+          $('.sidebar-overlay').click(function() {
+              $('.sidebar').removeClass('expanded');
+              $('.toggle-sidebar').removeClass('active');
+              $(this).removeClass('active');
+              $('.toggle-sidebar svg').html('<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />');
+          });
+
+          // Close sidebar when clicking a filter
+          $('.filter-tag').on('click', function() {
+              if (window.innerWidth < 768) {
+                  $('.sidebar').removeClass('expanded');
+                  $('.toggle-sidebar').removeClass('active');
+                  $('.sidebar-overlay').removeClass('active');
+                  $('.toggle-sidebar svg').html('<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />');
+              }
+          });
+
+          // Close sidebar when selecting a search result
+          $('#search-results').on('click', 'div', function() {
+              if (window.innerWidth < 768) {
+                  $('.sidebar').removeClass('expanded');
+                  $('.toggle-sidebar').removeClass('active');
+                  $('.sidebar-overlay').removeClass('active');
+                  $('.toggle-sidebar svg').html('<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />');
+              }
+          });
+
+          // Add scroll lock when sidebar is open on mobile
+          function toggleScrollLock(lock) {
+              if (lock) {
+                  $('body').css('overflow', 'hidden');
+              } else {
+                  $('body').css('overflow', '');
+              }
+          }
+
+          $('.toggle-sidebar').click(function() {
+              if (window.innerWidth < 768) {
+                  toggleScrollLock($(this).hasClass('active'));
+              }
+          });
+
+          $('.sidebar-overlay').click(function() {
+              toggleScrollLock(false);
+          });
+
+          // Handle window resize
+          $(window).resize(function() {
+              if (window.innerWidth >= 768) {
+                  $('.sidebar-overlay').removeClass('active');
+                  toggleScrollLock(false);
+              }
+          });
+
+          // Ensure scroll lock is removed when filters are used
+          $('.filter-tag').on('click', function() {
+              if (window.innerWidth < 768) {
+                  toggleScrollLock(false);
+              }
+          });
+
+          // Ensure scroll lock is removed when selecting a search result
+          $('#search-results').on('click', 'div', function() {
+              if (window.innerWidth < 768) {
+                  toggleScrollLock(false);
+              }
+          });
+
+          // Add scroll lock when sidebar is open on mobile
+          function toggleScrollLock(lock) {
+              if (lock) {
+                  $('body').css('overflow', 'hidden');
+              } else {
+                  $('body').css('overflow', '');
+              }
+          }
+
+          $('.toggle-sidebar').click(function() {
+              if (window.innerWidth < 768) {
+                  toggleScrollLock($(this).hasClass('active'));
+              }
+          });
+
+          $('.sidebar-overlay').click(function() {
+              toggleScrollLock(false);
+          });
+
+          // Handle window resize
+          $(window).resize(function() {
+              if (window.innerWidth >= 768) {
+                  $('.sidebar-overlay').removeClass('active');
+                  toggleScrollLock(false);
+              }
+          });
+
+          // Updated scroll handling for toggle button
+          let lastScrollTop = 0;
+          const header = $('header');
+          const headerHeight = header.outerHeight();
+          const toggleBtn = $('.toggle-sidebar');
+          
+          function updateTogglePosition() {
+              // No need to adjust position anymore as we're using fixed positioning at the bottom
+              // This function is now just a placeholder in case we need to add functionality later
+          }
+          
+          // Only keep resize handler to handle potential orientation changes
+          $(window).resize(function() {
+              if (window.innerWidth >= 768) {
+                  $('.toggle-sidebar').css('transform', ''); // Reset any transform
+              }
+          });
+
+          // Use event delegation for vote buttons to handle dynamically added content
+          $(document).on('click', '.vote-button', function() {
+              if (!$(this).prop('disabled')) {
+                  const postId = $(this).data('post-id');
+                  const replyId = $(this).data('reply-id');
+                  const voteType = $(this).data('vote-type');
+                  const button = $(this);
+                  const container = button.closest('.post-card, .bg-slate-700');
+                  const otherButton = voteType === 'upvote' ? 
+                      button.next('.vote-button') : 
+                      button.prev('.vote-button');
+                  
+                  // Determine if this is a post or reply vote
+                  const endpoint = replyId ? '{% url "vote_reply" %}' : '{% url "vote_post" %}';
+                  const data = replyId ? 
+                      { reply_id: replyId, vote_type: voteType } : 
+                      { post_id: postId, vote_type: voteType };
+                      
+                  // Add CSRF token
+                  data.csrfmiddlewaretoken = $('input[name=csrfmiddlewaretoken]').val();
+                  
+                  // Disable buttons during request
+                  container.find('.vote-button').prop('disabled', true);
+                  
+                  $.ajax({
+                      url: endpoint,
+                      type: 'POST',
+                      data: data,
+                      success: function(response) {
+                          if (response.status === 'success') {
+                              // Update vote counts
+                              container.find('.likes-count').text(response.likes_count);
+                              container.find('.dislikes-count').text(response.dislikes_count);
+                              
+                              // Remove active class from both buttons
+                              button.removeClass('active');
+                              otherButton.removeClass('active');
+                              
+                              // Add active class if vote was added
+                              if (response.action === 'added') {
+                                  button.addClass('active');
+                              }
+                          }
+                      },
+                      error: function(xhr, status, error) {
+                          console.error('Vote error:', error);
+                      },
+                      complete: function() {
+                          // Re-enable buttons
+                          container.find('.vote-button').prop('disabled', false);
+                      }
+                  });
+              }
+          });
+
+          // Improved search handling for mobile
+          $('#search-input').on('focus', function() {
+              $('body').addClass('search-active');
+          });
+          
+          $('#search-input').on('blur', function() {
+              setTimeout(function() {
+                  if (!$('#search-results:hover').length) {
+                      $('#search-results').hide();
+                      // Ensure body returns to normal state
+                      $('body').removeClass('search-active');
+                  }
+              }, 200);
+          });
+          
+          $('#search-input').on('input', function() {
+              // Ensure body scroll state is maintained
+              $('body').addClass('search-active');
+              
+              // Make sure search results don't prevent scrolling
+              if (query.length < 2) {
+                  $('#search-results').hide();
+                  return;
+              }
+              
+              // ...rest of the existing search code...
+          });
+          
+          // Ensure clicking outside search properly restores scrolling
+          $(document).on('click', function(e) {
+              if (!$(e.target).closest('#search-input, #search-results').length) {
+                  $('#search-results').hide();
+                  $('body').removeClass('search-active');
+              }
+          });
+          
+          // Update scrollToPost to maintain scroll behavior
+          window.scrollToPost = function(postId) {
+              const postElement = document.querySelector(`.toggle-post[data-post-id="${postId}"]`).closest('.post-card');
+              
+              if (postElement) {
+                  // Ensure scrolling is enabled
+                  $('body').removeClass('search-active');
+                  
+                  // Close search results before scrolling
+                  $('#search-results').hide();
+                  
+                  // Add a small delay to ensure UI is ready before scrolling
+                  setTimeout(function() {
+                      postElement.scrollIntoView({ behavior: 'smooth' });
+                      
+                      // Open the post content automatically
+                      const contentDiv = $(`#content-${postId}`);
+                      contentDiv.addClass("expanded");
+                      
+                      // Update toggle button
+                      const toggleBtn = $(`.toggle-post[data-post-id="${postId}"]`);
+                      toggleBtn.find(".show-text").addClass("hidden");
+                      toggleBtn.find(".hide-text").removeClass("hidden");
+                      toggleBtn.find(".show-icon").addClass("hidden");
+                      toggleBtn.find(".hide-icon").removeClass("hidden");
+                      
+                      // Highlight the post temporarily
+                      postElement.classList.add('ring-2', 'ring-blue-500');
+                      setTimeout(() => {
+                          postElement.classList.remove('ring-2', 'ring-blue-500');
+                      }, 2000);
+                  }, 100);
+              }
+          };
+
+          // Sort posts
+          $('.sort-button').on('click', function() {
+            const sortType = $(this).data('sort');
+            let sortedPosts;
+
+            if (sortType === 'recent') {
+              sortedPosts = $('.post-card').sort((a, b) => {
+                return new Date($(b).find('span:contains("Posted by")').next().next().text()) - new Date($(a).find('span:contains("Posted by")').next().next().text());
+              });
+            } else if (sortType === 'upvotes') {
+              sortedPosts = $('.post-card').sort((a, b) => {
+                return parseInt($(b).find('.likes-count').text().trim()) - parseInt($(a).find('.likes-count').text().trim());
+              });
+            } else if (sortType === 'downvotes') {
+              sortedPosts = $('.post-card').sort((a, b) => {
+                return parseInt($(b).find('.dislikes-count').text().trim()) - parseInt($(a).find('.dislikes-count').text().trim());
+              });
+            } else if (sortType === 'oldest') {
+              sortedPosts = $('.post-card').sort((a, b) => {
+                return new Date($(a).find('span:contains("Posted by")').next().next().text()) - new Date($(b).find('span:contains("Posted by")').next().next().text());
+              });
+            }
+
+            $('#forum-posts').html(sortedPosts);
+
+            // Reattach event listeners for dynamically added content
+            $('.toggle-post').off('click').on('click', function() {
+              const postId = $(this).data('post-id');
+              const contentDiv = $(`#content-${postId}`);
+
+              // Toggle expanded class
+              contentDiv.toggleClass('expanded');
+
+              // Toggle icons and text
+              $(this).find('.show-text, .hide-text, .show-icon, .hide-icon').toggleClass('hidden');
+            });
+          });
+      });
+    </script>
+
+    <!-- Add Tailwind Typography plugin styles for better rich content rendering -->
+    
+
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+  </body>
+</html>

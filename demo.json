@@ -1,0 +1,256 @@
+[
+  {
+    "model": "admin_interface.theme",
+    "pk": 1,
+    "fields": {
+      "name": "DEFAULT",
+      "active": true,
+      "title": "CyberShield Administration",
+      "title_color": "#F5DD5D",
+      "title_visible": true,
+      "logo": "",
+      "logo_color": "#FFFFFF",
+      "logo_max_width": 400,
+      "logo_max_height": 100,
+      "logo_visible": false,
+      "favicon": "school.png",
+      "env_name": "",
+      "env_color": "#E74C3C",
+      "env_visible_in_header": false,
+      "env_visible_in_favicon": false,
+      "language_chooser_active": false,
+      "language_chooser_control": "default-select",
+      "language_chooser_display": "code",
+      "css_header_background_color": "#0C4B33",
+      "css_header_text_color": "#44B78B",
+      "css_header_link_color": "#FFFFFF",
+      "css_header_link_hover_color": "#C9F0DD",
+      "css_module_background_color": "#44B78B",
+      "css_module_background_selected_color": "#FFFFCC",
+      "css_module_text_color": "#FFFFFF",
+      "css_module_link_color": "#FFFFFF",
+      "css_module_link_selected_color": "#FFFFFF",
+      "css_module_link_hover_color": "#C9F0DD",
+      "css_module_rounded_corners": true,
+      "css_generic_link_color": "#0C3C26",
+      "css_generic_link_hover_color": "#156641",
+      "css_generic_link_active_color": "#29B864",
+      "css_save_button_background_color": "#0C4B33",
+      "css_save_button_background_hover_color": "#0C3C26",
+      "css_save_button_text_color": "#FFFFFF",
+      "css_delete_button_background_color": "#BA2121",
+      "css_delete_button_background_hover_color": "#A41515",
+      "css_delete_button_text_color": "#FFFFFF",
+      "related_modal_active": true,
+      "related_modal_background_color": "#000000",
+      "related_modal_background_opacity": "0.3",
+      "related_modal_rounded_corners": true,
+      "related_modal_close_button_visible": true,
+      "list_filter_highlight": true,
+      "list_filter_dropdown": true,
+      "list_filter_sticky": true,
+      "list_filter_removal_links": false,
+      "foldable_apps": true,
+      "show_fieldsets_as_tabs": false,
+      "show_inlines_as_tabs": false,
+      "collapsible_stacked_inlines": false,
+      "collapsible_stacked_inlines_collapsed": true,
+      "collapsible_tabular_inlines": false,
+      "collapsible_tabular_inlines_collapsed": true,
+      "recent_actions_visible": true,
+      "form_submit_sticky": false,
+      "form_pagination_sticky": false
+    }
+  },
+  {
+    "model": "forum.customuser",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$Xmoat22tAsxQWZD3FSrgP5$eddSuJRsoOO8FGrc/jGhOP7+TglGFOd5nHuFGXzSr+s=",
+      "last_login": "2024-01-01T12:00:00Z",
+      "is_superuser": false,
+      "username": "alice_security",
+      "first_name": "Alice",
+      "last_name": "Smith",
+      "email": "alice@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-01-01T12:00:00Z",
+      "role": "user",
+      "bio": "Security analyst with a passion for cybersecurity. Currently pursuing certifications in CEH and OSCP."
+    }
+  },
+  {
+    "model": "forum.customuser",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$Xmoat22tAsxQWZD3FSrgP5$eddSuJRsoOO8FGrc/jGhOP7+TglGFOd5nHuFGXzSr+s=",
+      "last_login": "2024-01-01T12:00:00Z",
+      "is_superuser": false,
+      "username": "bob_cyber",
+      "first_name": "Bob",
+      "last_name": "Johnson",
+      "email": "bob@example.com",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-01-01T12:00:00Z",
+      "role": "user",
+      "bio": "Cybersecurity enthusiast with a focus on network security and penetration testing."
+    }
+  },
+  {
+    "model": "forum.customuser",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$Xmoat22tAsxQWZD3FSrgP5$eddSuJRsoOO8FGrc/jGhOP7+TglGFOd5nHuFGXzSr+s=",
+      "last_login": "2024-01-01T12:00:00Z",
+      "is_superuser": false,
+      "username": "carol_mod",
+      "first_name": "Carol",
+      "last_name": "Williams",
+      "email": "carol@example.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-01-01T12:00:00Z",
+      "role": "moderator",
+      "bio": "Experienced security professional with 10+ years in cybersecurity. Certified in CISSP and CEH."
+    }
+  },
+  {
+    "model": "forum.customuser",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$Xmoat22tAsxQWZD3FSrgP5$eddSuJRsoOO8FGrc/jGhOP7+TglGFOd5nHuFGXzSr+s=",
+      "last_login": "2024-01-01T12:00:00Z",
+      "is_superuser": true,
+      "username": "MainAdmin",
+      "first_name": "Admin",
+      "last_name": "User",
+      "email": "admin@example.com",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-01-01T12:00:00Z",
+      "role": "admin",
+      "bio": "System administrator with full access privileges."
+    }
+  },
+  {
+    "model": "forum.moderator",
+    "pk": 1,
+    "fields": {
+      "username": 3,
+      "bio": "Experienced security professional with 10+ years in cybersecurity. Certified in CISSP and CEH.",
+      "Email": "carol@example.com",
+      "status": "active"
+    }
+  },
+  {
+    "model": "forum.forumtag",
+    "pk": 1,
+    "fields": {
+      "name": "Phishing"
+    }
+  },
+  {
+    "model": "forum.forumtag",
+    "pk": 2,
+    "fields": {
+      "name": "Web Security"
+    }
+  },
+  {
+    "model": "forum.forumtag",
+    "pk": 3,
+    "fields": {
+      "name": "Malware Analysis"
+    }
+  },
+  {
+    "model": "forum.forumtag",
+    "pk": 4,
+    "fields": {
+      "name": "Cloud Security"
+    }
+  },
+  {
+    "model": "forum.forumpost",
+    "pk": 1,
+    "fields": {
+      "title": "Best Practices for Preventing Phishing Attacks",
+      "content": "Phishing attacks are a common threat to organizations. What are the best practices for preventing phishing attacks and educating employees about phishing risks?",
+      "forum_tag": 1,
+      "author": 1,
+      "created_at": "2024-01-01T13:00:00Z",
+      "updated_at": "2024-01-01T13:00:00Z"
+    }
+  },
+  {
+    "model": "forum.forumreply",
+    "pk": 1,
+    "fields": {
+      "content": "One effective method is to conduct regular phishing simulations to test employees' awareness and response to phishing emails. Training programs and awareness campaigns can also help employees recognize phishing attempts.",
+      "author": 2,
+      "post": 1,
+      "created_at": "2024-01-01T13:30:00Z",
+      "updated_at": "2024-01-01T13:30:00Z"
+    }
+  },
+  {
+    "model": "forum.forumreply",
+    "pk": 2,
+    "fields": {
+      "content": "As a moderator, I'd like to add that network monitoring is crucial. Consider setting up tools like Wireshark for periodic traffic analysis and Pi-hole for network-wide ad and malware blocking.",
+      "author": 3,
+      "post": 1,
+      "created_at": "2024-01-01T14:00:00Z",
+      "updated_at": "2024-01-01T14:00:00Z"
+    }
+  },
+  {
+    "model": "forum.forumpost",
+    "pk": 2,
+    "fields": {
+      "title": "Detecting XSS Vulnerabilities in Web Applications",
+      "content": "I'm developing a web application and want to ensure it's protected against XSS attacks. What are the most effective methods for detecting and preventing XSS vulnerabilities?",
+      "forum_tag": 2,
+      "author": 2,
+      "created_at": "2024-01-01T15:00:00Z",
+      "updated_at": "2024-01-01T15:00:00Z"
+    }
+  },
+  {
+    "model": "forum.forumreply",
+    "pk": 3,
+    "fields": {
+      "content": "Here's what I do in my applications:\n1. Always validate and sanitize user input\n2. Use Content Security Policy (CSP) headers\n3. Implement proper output encoding\n4. Use modern frameworks that have built-in XSS protection",
+      "author": 1,
+      "post": 2,
+      "created_at": "2024-01-01T15:30:00Z",
+      "updated_at": "2024-01-01T15:30:00Z"
+    }
+  },
+  {
+    "model": "forum.forumpost",
+    "pk": 3,
+    "fields": {
+      "title": "Latest Ransomware Trends and Prevention",
+      "content": "There's been a surge in ransomware attacks targeting small businesses. Let's discuss current trends and effective prevention strategies. What patterns are you seeing in recent attacks?",
+      "forum_tag": 3,
+      "author": 3,
+      "created_at": "2024-01-01T16:00:00Z",
+      "updated_at": "2024-01-01T16:00:00Z"
+    }
+  },
+  {
+    "model": "forum.forumpost",
+    "pk": 4,
+    "fields": {
+      "title": "Securing AWS S3 Buckets",
+      "content": "What are the essential steps to secure AWS S3 buckets? I've heard about several data leaks due to misconfigured S3 buckets and want to ensure our company's data is properly protected.",
+      "forum_tag": 4,
+      "author": 1,
+      "created_at": "2024-01-01T17:00:00Z",
+      "updated_at": "2024-01-01T17:00:00Z"
+    }
+  }
+]

@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Leaderboard - CyberShield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'css/cybershield-theme.css' %}" />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {% include 'components/site_header.html' %}
+
+    <main class="main-wrap flex-grow">
+      <div class="space-y-12 max-w-6xl mx-auto">
+        <section class="glass-panel leaderboard-hero">
+          <div class="glass-panel__header space-y-4 text-center md:text-left">
+            <p class="section-title text-xs tracking-[0.4em]">Community Leaderboard</p>
+            <h1 class="card-title text-3xl md:text-4xl">Celebrating top defenders</h1>
+            <p class="section-subtitle">
+              Track the analysts keeping CyberShield sharp. Rankings update as likes roll in across discussions and reply threads.
+            </p>
+          </div>
+          <div class="glass-panel__body">
+            <div class="leaderboard-metrics">
+              <div class="metric-chip">
+                <span>Total contributors</span>
+                <strong>{{ user_stats|length }}</strong>
+              </div>
+              {% if user_stats %}
+                <div class="metric-chip">
+                  <span>Current leader</span>
+                  <strong>{{ user_stats.0.user.username }}</strong>
+                </div>
+                <div class="metric-chip">
+                  <span>Top like count</span>
+                  <strong>{{ user_stats.0.total_likes }}</strong>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+
+        {% if user_stats|length >= 3 %}
+          <section class="podium-panel">
+            <div class="podium-grid">
+              <article class="podium-card podium-card--second">
+                <header class="podium-header">
+                  <span class="podium-rank">02</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75a3 3 0 116 0v3.213a6 6 0 013 5.197v1.09a.75.75 0 01-.53.717l-4.5 1.285a.75.75 0 01-.44 0l-4.5-1.285a.75.75 0 01-.53-.717v-1.09a6 6 0 013-5.197V6.75z" />
+                  </svg>
+                </header>
+                <div class="podium-avatar">
+                  {% if user_stats.1.user.profile_picture %}
+                    <img src="{{ user_stats.1.user.profile_picture.url }}" alt="{{ user_stats.1.user.username }}" />
+                  {% else %}
+                    <span>{{ user_stats.1.user.username|first|upper }}</span>
+                  {% endif %}
+                </div>
+                <h3>{{ user_stats.1.user.username }}</h3>
+                <p>{{ user_stats.1.total_likes }} likes · {{ user_stats.1.post_count }} posts</p>
+              </article>
+
+              <article class="podium-card podium-card--first">
+                <header class="podium-header">
+                  <span class="podium-rank">01</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75a3 3 0 116 0v3.213a6 6 0 013 5.197v1.09a.75.75 0 01-.53.717l-4.5 1.285a.75.75 0 01-.44 0l-4.5-1.285a.75.75 0 01-.53-.717v-1.09a6 6 0 013-5.197V6.75z" />
+                  </svg>
+                </header>
+                <div class="podium-avatar podium-avatar--primary">
+                  {% if user_stats.0.user.profile_picture %}
+                    <img src="{{ user_stats.0.user.profile_picture.url }}" alt="{{ user_stats.0.user.username }}" />
+                  {% else %}
+                    <span>{{ user_stats.0.user.username|first|upper }}</span>
+                  {% endif %}
+                </div>
+                <h3>{{ user_stats.0.user.username }}</h3>
+                <p>{{ user_stats.0.total_likes }} likes · {{ user_stats.0.post_count }} posts</p>
+              </article>
+
+              <article class="podium-card podium-card--third">
+                <header class="podium-header">
+                  <span class="podium-rank">03</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75a3 3 0 116 0v3.213a6 6 0 013 5.197v1.09a.75.75 0 01-.53.717l-4.5 1.285a.75.75 0 01-.44 0l-4.5-1.285a.75.75 0 01-.53-.717v-1.09a6 6 0 013-5.197V6.75z" />
+                  </svg>
+                </header>
+                <div class="podium-avatar">
+                  {% if user_stats.2.user.profile_picture %}
+                    <img src="{{ user_stats.2.user.profile_picture.url }}" alt="{{ user_stats.2.user.username }}" />
+                  {% else %}
+                    <span>{{ user_stats.2.user.username|first|upper }}</span>
+                  {% endif %}
+                </div>
+                <h3>{{ user_stats.2.user.username }}</h3>
+                <p>{{ user_stats.2.total_likes }} likes · {{ user_stats.2.post_count }} posts</p>
+              </article>
+            </div>
+          </section>
+        {% endif %}
+
+        <section class="glass-panel">
+          <div class="glass-panel__header flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="section-title text-xs tracking-[0.35em]">Complete rankings</p>
+              <h2 class="card-title text-2xl md:text-3xl">Every contributor, transparent scoring</h2>
+            </div>
+            <div class="leaderboard-legend">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              <span>Sorted by total likes received across posts</span>
+            </div>
+          </div>
+
+          <div class="glass-panel__body p-0">
+            <div class="table-responsive">
+              <table class="table leaderboard-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Analyst</th>
+                    <th scope="col" class="text-center">Posts</th>
+                    <th scope="col" class="text-center">Total likes</th>
+                    <th scope="col">Last active</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for stats in user_stats %}
+                    <tr class="{% if forloop.counter0 < 3 %}leaderboard-table__top{% endif %}">
+                      <td data-label="Rank">
+                        <span class="rank-chip">#{{ forloop.counter }}</span>
+                      </td>
+                      <td data-label="Analyst">
+                        <div class="table-user">
+                          <div class="table-avatar">
+                            {% if stats.user.profile_picture %}
+                              <img src="{{ stats.user.profile_picture.url }}" alt="{{ stats.user.username }}" />
+                            {% else %}
+                              <span>{{ stats.user.username|first|upper }}</span>
+                            {% endif %}
+                          </div>
+                          <div>
+                            <a href="{% url 'user_profile' stats.user.username %}" class="table-username">{{ stats.user.username }}</a>
+                            <p class="table-meta">Joined {{ stats.user.date_joined|date:"M Y" }}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td data-label="Posts" class="text-center">{{ stats.post_count }}</td>
+                      <td data-label="Likes" class="text-center">{{ stats.total_likes }}</td>
+                      <td data-label="Last active">
+                        {% if stats.last_activity %}
+                          {{ stats.last_activity|date:"M d, Y" }}
+                        {% else %}
+                          —
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="5" class="text-center py-6 text-soft">No contributor data yet. Start a discussion to climb the charts.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <div class="flex justify-center">
+          <a href="{% url 'forum_list' %}" class="nav-pill nav-pill--ghost">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to all discussions
+          </a>
+        </div>
+      </div>
+    </main>
+
+    {% include 'components/site_footer.html' %}
+
+    <script src="{% static 'js/cybershield-theme.js' %}"></script>
+  </body>
+</html>
