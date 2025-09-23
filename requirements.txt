@@ -1,8 +1,7 @@
-django
-django-admin-interface
-django-ckeditor-5
-django-recaptcha
-pillow
-ckeditor
-whitenoise
-vercel-wsgi
+django==5.1.6
+django-admin-interface==0.26.0
+django-ckeditor-5==0.2.13
+django-recaptcha==4.0.0
+pillow==10.4.0
+whitenoise==6.6.0
+vercel-wsgi==0.3.2
