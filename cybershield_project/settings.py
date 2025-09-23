@@ -3,11 +3,15 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "6Le1y-IqAAAAAP9K6_Gr8v7Yp_XShGY0a--JWgrv"
-DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "35.182.152.63", "d2r6sxfy47w9d0.cloudfront.net"]
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret")
+DEBUG = os.environ.get("DJANGO_DEBUG", "false").lower() in ("1", "true", "yes")
+
+# Allow local hosts and dynamic Vercel preview/prod URLs
+_vercel_url = os.environ.get("VERCEL_URL", "").replace("https://", "").replace("http://", "")
+ALLOWED_HOSTS = [h for h in ["127.0.0.1", "localhost", "35.182.152.63", "d2r6sxfy47w9d0.cloudfront.net", _vercel_url] if h]
+
 # CSRF Trusted Origins
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8000", "http://127.0.0.1:8000", "https://d2r6sxfy47w9d0.cloudfront.net"]
+CSRF_TRUSTED_ORIGINS = [o for o in ["http://localhost:8000", "http://127.0.0.1:8000", "https://d2r6sxfy47w9d0.cloudfront.net", f"https://{_vercel_url}" if _vercel_url else ""] if o]
 
 INSTALLED_APPS = [
     # Custom admin interface (must come before django.contrib.admin)
@@ -33,6 +37,7 @@ FIXTURE_DIRS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -94,6 +99,10 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# WhiteNoise static files settings for serverless
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

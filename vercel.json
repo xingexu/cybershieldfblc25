@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" },
+    { "src": "frontend/index.html", "use": "@vercel/static" },
+    { "src": "static/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/(admin|become_moderator|login|logout|user_signup|terms_conditions|create_forum|user/.+|discussion/.+|vote/.+|profile/.+|leaderboard/?)", "dest": "/api/index.py" },
+    { "src": "/", "dest": "/api/index.py" }
+  ]
+}
+
+
